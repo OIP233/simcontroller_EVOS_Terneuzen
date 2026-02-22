@@ -207,8 +207,8 @@
     <div class="tab" data-tab="tone" onclick="switchTab('tone')">🎙️ <span class="tl" data-nl="Toon & Protocol" data-en="Tone & Protocol">Toon & Protocol</span></div>
     <div class="tab" data-tab="scenarios" onclick="switchTab('scenarios')">📋 <span class="tl" data-nl="Scenario's" data-en="Scenarios">Scenario's</span> <span class="tab-badge">50</span></div>
     <div class="tab" data-tab="new-scenarios" onclick="switchTab('new-scenarios')">🔄 <span class="tl" data-nl="Vervangend" data-en="Replacement">Vervangend</span> <span class="tab-badge new-count">0</span></div>
-    <div class="tab" data-tab="access-codes" onclick="switchTab('access-codes')">🎟️ <span class="tl" data-nl="Toegangscodes" data-en="Access Codes">Toegangscodes</span> <span class="tab-badge codes-count">0</span></div>
-    <div class="tab" data-tab="export" onclick="switchTab('export')">📦 <span class="tl" data-nl="Export" data-en="Export">Export</span></div>
+    <div class="tab" data-tab="access-codes" onclick="switchTab('access-codes')">📄 <span class="tl" data-nl="Persoonlijke Configuratie" data-en="Personal Configuration">Persoonlijke Configuratie</span> <span class="tab-badge codes-count">0</span></div>
+    <div class="tab" data-tab="export" onclick="switchTab('export')">📥 <span class="tl" data-nl="Import" data-en="Import">Import</span></div>
     <div class="tab" data-tab="decoder" onclick="switchTab('decoder')" style="border-left: 1px solid var(--border); margin-left: 10px; padding-left: 22px;">🔓 <span class="tl" data-nl="Resultaten" data-en="Results">Resultaten</span></div>
 </div>
 
@@ -367,113 +367,97 @@
 <div class="tab-content" id="tab-access-codes">
     <div class="info-bar">
         <span class="info-bar-icon">🎟️</span>
-        <div class="tl" data-nl="Genereer unieke toegangscodes voor deelnemers. Elke code kan slechts éénmaal worden gebruikt om de simulator te starten. Dit voorkomt ongeautoriseerde deelname en herhaalde pogingen." data-en="Generate unique access codes for participants. Each code can only be used once to start the simulator. This prevents unauthorized participation and repeated attempts.">Genereer unieke toegangscodes voor deelnemers. Elke code kan slechts éénmaal worden gebruikt om de simulator te starten. Dit voorkomt ongeautoriseerde deelname en herhaalde pogingen.</div>
+        <div class="tl" data-nl="Genereer persoonlijke configuratiebestanden voor deelnemers. Elk bestand bevat een unieke toegangscode en kan slechts éénmaal worden gebruikt. Voor herkansing is een nieuw configuratiebestand nodig." data-en="Generate personal configuration files for participants. Each file contains a unique access code and can only be used once. A new configuration file is required for retakes.">Genereer persoonlijke configuratiebestanden voor deelnemers. Elk bestand bevat een unieke toegangscode en kan slechts éénmaal worden gebruikt. Voor herkansing is een nieuw configuratiebestand nodig.</div>
     </div>
 
     <div class="section">
         <div class="section-header">
-            <div class="section-title"><div class="section-title-icon" style="background:var(--accent-green-dim);color:var(--accent-green);">➕</div><span class="tl" data-nl="Codes Genereren" data-en="Generate Codes">Codes Genereren</span></div>
+            <div class="section-title"><div class="section-title-icon" style="background:var(--accent-green-dim);color:var(--accent-green);">👤</div><span class="tl" data-nl="Persoonlijke Configuratie" data-en="Personal Configuration">Persoonlijke Configuratie</span></div>
         </div>
+        <p class="section-description tl" data-nl="Genereer een configuratiebestand voor één deelnemer. Dit bestand bevat alle bedrijfsaanpassingen plus een unieke toegangscode." data-en="Generate a configuration file for one participant. This file contains all company customizations plus a unique access code.">Genereer een configuratiebestand voor één deelnemer. Dit bestand bevat alle bedrijfsaanpassingen plus een unieke toegangscode.</p>
         
-        <div class="form-grid" style="grid-template-columns: 1fr 1fr 1fr auto; align-items: end; gap: 16px;">
+        <div class="form-grid" style="grid-template-columns: 1fr 1fr auto; align-items: end; gap: 16px;">
             <div class="form-group">
-                <label class="tl" data-nl="Aantal codes" data-en="Number of codes">Aantal codes</label>
-                <input type="number" id="codeCount" value="5" min="1" max="100" style="width:100%;">
+                <label class="tl" data-nl="Naam deelnemer" data-en="Participant name">Naam deelnemer</label>
+                <input type="text" id="participantNameForCode" placeholder="bijv. Jan de Vries" style="width:100%;">
             </div>
             <div class="form-group">
                 <label class="tl" data-nl="Geldig tot (optioneel)" data-en="Valid until (optional)">Geldig tot (optioneel)</label>
-                <input type="date" id="codeExpiry" style="width:100%;">
+                <input type="date" id="singleCodeExpiry" style="width:100%;">
             </div>
-            <div class="form-group">
-                <label class="tl" data-nl="Notitie (optioneel)" data-en="Note (optional)">Notitie (optioneel)</label>
-                <input type="text" id="codeNote" placeholder="bijv. Groep A, Training maart..." style="width:100%;">
-            </div>
-            <button class="btn btn-primary" onclick="generateAccessCodes()" style="height:46px;">
-                🎟️ <span class="tl" data-nl="Genereer" data-en="Generate">Genereer</span>
+            <button class="btn btn-primary" onclick="generatePersonalConfig()" style="height:46px;">
+                📄 <span class="tl" data-nl="Genereer & Download" data-en="Generate & Download">Genereer & Download</span>
             </button>
         </div>
     </div>
 
     <div class="section">
         <div class="section-header">
-            <div class="section-title"><div class="section-title-icon" style="background:var(--accent-blue-dim);color:var(--accent-blue);">📋</div><span class="tl" data-nl="Actieve Codes" data-en="Active Codes">Actieve Codes</span> <span class="tab-badge codes-active" style="margin-left:8px;">0</span></div>
-            <div style="display:flex;gap:8px;">
-                <button class="btn btn-secondary btn-sm" onclick="copyAllCodes()">📋 <span class="tl" data-nl="Kopieer alle" data-en="Copy all">Kopieer alle</span></button>
-                <button class="btn btn-secondary btn-sm" onclick="downloadCodesList()">⬇️ <span class="tl" data-nl="Download lijst" data-en="Download list">Download lijst</span></button>
-                <button class="btn btn-secondary btn-sm" onclick="clearExpiredCodes()" style="color:var(--accent-orange);">🗑️ <span class="tl" data-nl="Verwijder verlopen" data-en="Remove expired">Verwijder verlopen</span></button>
-            </div>
+            <div class="section-title"><div class="section-title-icon" style="background:var(--accent-blue-dim);color:var(--accent-blue);">👥</div><span class="tl" data-nl="Batch Genereren" data-en="Batch Generate">Batch Genereren</span></div>
         </div>
+        <p class="section-description tl" data-nl="Genereer configuratiebestanden voor meerdere deelnemers tegelijk. Voer namen in, gescheiden door een nieuwe regel." data-en="Generate configuration files for multiple participants at once. Enter names separated by new lines.">Genereer configuratiebestanden voor meerdere deelnemers tegelijk. Voer namen in, gescheiden door een nieuwe regel.</p>
         
-        <div id="codesTableContainer">
-            <table class="replace-table" id="codesTable">
-                <thead>
-                    <tr>
-                        <th style="width:140px;">Code</th>
-                        <th class="tl" data-nl="Status" data-en="Status">Status</th>
-                        <th class="tl" data-nl="Aangemaakt" data-en="Created">Aangemaakt</th>
-                        <th class="tl" data-nl="Geldig tot" data-en="Valid until">Geldig tot</th>
-                        <th class="tl" data-nl="Notitie" data-en="Note">Notitie</th>
-                        <th class="tl" data-nl="Gebruikt door" data-en="Used by">Gebruikt door</th>
-                        <th style="width:80px;"></th>
-                    </tr>
-                </thead>
-                <tbody id="codesTableBody">
-                </tbody>
-            </table>
-            <div id="noCodesMessage" class="hidden" style="text-align:center;padding:40px;color:var(--text-muted);">
-                <div style="font-size:48px;margin-bottom:16px;">🎟️</div>
-                <p class="tl" data-nl="Nog geen toegangscodes aangemaakt." data-en="No access codes created yet.">Nog geen toegangscodes aangemaakt.</p>
+        <div class="form-grid" style="grid-template-columns: 2fr 1fr; gap: 16px;">
+            <div class="form-group">
+                <label class="tl" data-nl="Deelnemers (één naam per regel)" data-en="Participants (one name per line)">Deelnemers (één naam per regel)</label>
+                <textarea id="batchParticipantNames" rows="6" placeholder="Jan de Vries&#10;Petra Jansen&#10;Mohammed El Amrani&#10;..." style="width:100%;font-family:'IBM Plex Mono',monospace;"></textarea>
+            </div>
+            <div>
+                <div class="form-group">
+                    <label class="tl" data-nl="Geldig tot (optioneel)" data-en="Valid until (optional)">Geldig tot (optioneel)</label>
+                    <input type="date" id="batchCodeExpiry" style="width:100%;">
+                </div>
+                <button class="btn btn-primary" onclick="generateBatchConfigs()" style="width:100%;margin-top:16px;">
+                    📦 <span class="tl" data-nl="Genereer Alle" data-en="Generate All">Genereer Alle</span>
+                </button>
+                <div style="margin-top:12px;font-size:12px;color:var(--text-muted);text-align:center;" id="batchCount">0 deelnemers</div>
             </div>
         </div>
     </div>
 
     <div class="section">
         <div class="section-header">
-            <div class="section-title"><div class="section-title-icon" style="background:var(--accent-purple-dim);color:var(--accent-purple);">📊</div><span class="tl" data-nl="Statistieken" data-en="Statistics">Statistieken</span></div>
+            <div class="section-title"><div class="section-title-icon" style="background:var(--accent-purple-dim);color:var(--accent-purple);">📋</div><span class="tl" data-nl="Uitgegeven Configuraties" data-en="Issued Configurations">Uitgegeven Configuraties</span> <span class="tab-badge codes-active" style="margin-left:8px;">0</span></div>
+            <div style="display:flex;gap:8px;">
+                <button class="btn btn-secondary btn-sm" onclick="downloadIssuedList()">⬇️ <span class="tl" data-nl="Export overzicht" data-en="Export overview">Export overzicht</span></button>
+                <button class="btn btn-secondary btn-sm" onclick="clearIssuedConfigs()" style="color:var(--accent-red);">🗑️ <span class="tl" data-nl="Wis lijst" data-en="Clear list">Wis lijst</span></button>
+            </div>
         </div>
-        <div class="form-grid" style="grid-template-columns: repeat(4, 1fr); gap: 16px;">
-            <div style="background:var(--bg-input);border-radius:10px;padding:20px;text-align:center;">
-                <div style="font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;" class="tl" data-nl="Totaal" data-en="Total">Totaal</div>
-                <div style="font-size:32px;font-weight:700;" id="statsTotalCodes">0</div>
-            </div>
-            <div style="background:var(--bg-input);border-radius:10px;padding:20px;text-align:center;">
-                <div style="font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;" class="tl" data-nl="Beschikbaar" data-en="Available">Beschikbaar</div>
-                <div style="font-size:32px;font-weight:700;color:var(--accent-green);" id="statsAvailable">0</div>
-            </div>
-            <div style="background:var(--bg-input);border-radius:10px;padding:20px;text-align:center;">
-                <div style="font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;" class="tl" data-nl="Gebruikt" data-en="Used">Gebruikt</div>
-                <div style="font-size:32px;font-weight:700;color:var(--accent-blue);" id="statsUsed">0</div>
-            </div>
-            <div style="background:var(--bg-input);border-radius:10px;padding:20px;text-align:center;">
-                <div style="font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;" class="tl" data-nl="Verlopen" data-en="Expired">Verlopen</div>
-                <div style="font-size:32px;font-weight:700;color:var(--accent-orange);" id="statsExpired">0</div>
+        
+        <div id="issuedTableContainer">
+            <table class="replace-table" id="issuedTable">
+                <thead>
+                    <tr>
+                        <th class="tl" data-nl="Deelnemer" data-en="Participant">Deelnemer</th>
+                        <th>Sessie ID</th>
+                        <th class="tl" data-nl="Aangemaakt" data-en="Created">Aangemaakt</th>
+                        <th class="tl" data-nl="Geldig tot" data-en="Valid until">Geldig tot</th>
+                        <th style="width:100px;"></th>
+                    </tr>
+                </thead>
+                <tbody id="issuedTableBody">
+                </tbody>
+            </table>
+            <div id="noIssuedMessage" style="text-align:center;padding:40px;color:var(--text-muted);">
+                <div style="font-size:48px;margin-bottom:16px;">📄</div>
+                <p class="tl" data-nl="Nog geen configuraties uitgegeven." data-en="No configurations issued yet.">Nog geen configuraties uitgegeven.</p>
             </div>
         </div>
     </div>
 </div>
 
-<!-- ============ TAB: EXPORT ============ -->
+<!-- ============ TAB: IMPORT ============ -->
 <div class="tab-content" id="tab-export">
     <div class="section">
-        <div class="section-header"><div class="section-title"><div class="section-title-icon" style="background:var(--accent-blue-dim);color:var(--accent-blue);">📦</div><span class="tl" data-nl="Configuratie Exporteren" data-en="Export Configuration">Configuratie Exporteren</span></div></div>
-        <p class="section-description tl" data-nl="Exporteer uw volledige configuratie als JSON. Dit bestand wordt gebruikt om een bedrijfsspecifieke simulator te genereren." data-en="Export your full configuration as JSON. This file is used to generate a company-specific simulator.">Exporteer uw volledige configuratie als JSON. Dit bestand wordt gebruikt om een bedrijfsspecifieke simulator te genereren.</p>
-        <div style="display:flex;gap:12px;margin-bottom:24px;">
-            <button class="btn btn-primary" onclick="generateExport()">📄 <span class="tl" data-nl="Genereer" data-en="Generate">Genereer</span></button>
-            <button class="btn btn-success hidden" id="btnDownload" onclick="downloadExport()">⬇️ Download JSON</button>
-            <button class="btn btn-secondary hidden" id="btnCopy" onclick="copyExport()">📋 <span class="tl" data-nl="Kopieer" data-en="Copy">Kopieer</span></button>
-        </div>
-        <div id="exportSummary" class="hidden"></div>
-        <div id="exportPreviewContainer" class="hidden">
-            <h3 style="font-size:14px;font-weight:600;margin:16px 0 12px;">🔍 JSON Preview</h3>
-            <div class="export-preview" id="exportPreview"></div>
-        </div>
-    </div>
-    <div class="section">
-        <div class="section-header"><div class="section-title"><div class="section-title-icon" style="background:var(--accent-green-dim);color:var(--accent-green);">📥</div><span class="tl" data-nl="Importeren" data-en="Import">Importeren</span></div></div>
+        <div class="section-header"><div class="section-title"><div class="section-title-icon" style="background:var(--accent-green-dim);color:var(--accent-green);">📥</div><span class="tl" data-nl="Instellingen Laden" data-en="Load Settings">Instellingen Laden</span></div></div>
+        <p class="section-description tl" data-nl="Laad eerder opgeslagen bedrijfsinstellingen om verder te werken of aan te passen." data-en="Load previously saved company settings to continue working or make adjustments.">Laad eerder opgeslagen bedrijfsinstellingen om verder te werken of aan te passen.</p>
         <input type="file" id="importFile" accept=".json" onchange="importConfig(event)" style="display:none;">
         <div style="display:flex;gap:12px;align-items:center;">
-            <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">📂 <span class="tl" data-nl="JSON Laden" data-en="Load JSON">JSON Laden</span></button>
+            <button class="btn btn-primary" onclick="document.getElementById('importFile').click()">📂 <span class="tl" data-nl="JSON Laden" data-en="Load JSON">JSON Laden</span></button>
             <span id="importStatus" style="font-size:13px;color:var(--text-muted);"></span>
+        </div>
+        <div style="margin-top:20px;padding:16px;background:rgba(0,184,255,0.06);border:1px solid rgba(0,184,255,0.2);border-radius:8px;font-size:13px;color:var(--text-secondary);">
+            💡 <strong>Tip:</strong> U kunt ook een eerder gegenereerde persoonlijke configuratie laden. De bedrijfsinstellingen worden dan automatisch ingevuld.
         </div>
     </div>
 </div>
@@ -1071,8 +1055,7 @@ function gatherConfig() {
         },
         replacements: { operators: {}, products: {}, equipment: {}, custom: [] },
         scenarioEdits: scenarioEdits,
-        newScenarios: newScenarios.filter(s => s.title.trim()),
-        accessCodes: getValidCodesForExport()
+        newScenarios: newScenarios.filter(s => s.title.trim())
     };
     document.querySelectorAll('[data-rn]').forEach(i => { if(i.value.trim()) config.replacements.operators[i.getAttribute('data-rn')] = i.value.trim(); });
     document.querySelectorAll('[data-rp]').forEach(i => { if(i.value.trim()) config.replacements.products[i.getAttribute('data-rp')] = i.value.trim(); });
@@ -1204,211 +1187,286 @@ function showToast(msg) {
 }
 
 // =====================================================
-// TOEGANGSCODES FUNCTIES
+// PERSOONLIJKE CONFIGURATIE FUNCTIES
 // =====================================================
-let accessCodes = JSON.parse(localStorage.getItem('oip_access_codes') || '[]');
+let issuedConfigs = JSON.parse(localStorage.getItem('oip_issued_configs') || '[]');
 
-function saveAccessCodes() {
-    localStorage.setItem('oip_access_codes', JSON.stringify(accessCodes));
-    updateCodesDisplay();
-    updateCodesStats();
+function saveIssuedConfigs() {
+    localStorage.setItem('oip_issued_configs', JSON.stringify(issuedConfigs));
+    updateIssuedDisplay();
 }
 
-function generateAccessCodes() {
-    const count = parseInt(document.getElementById('codeCount').value) || 5;
-    const expiry = document.getElementById('codeExpiry').value;
-    const note = document.getElementById('codeNote').value.trim();
+function buildPersonalConfig(participantName, expiresAt) {
+    // Genereer unieke sessie ID (voor tracking)
+    const sessionId = 'SIM-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substring(2, 6).toUpperCase();
     
-    const newCodes = [];
-    for (let i = 0; i < count; i++) {
-        const code = generateUniqueCode();
-        newCodes.push({
-            code: code,
-            status: 'available', // available, used, expired
-            createdAt: new Date().toISOString(),
-            expiresAt: expiry ? new Date(expiry + 'T23:59:59').toISOString() : null,
-            note: note,
-            usedBy: null,
-            usedAt: null
-        });
-    }
+    // Bouw configuratie op basis van huidige instellingen (zelfde structuur als gatherConfig)
+    const config = {
+        meta: { version: '2.0', created: new Date().toISOString(), portal: 'OIP Simulator Controller v2' },
+        participant: {
+            name: participantName,
+            sessionId: sessionId,
+            expiresAt: expiresAt
+        },
+        company: {
+            name: document.getElementById('companyName').value.trim(),
+            terminal: document.getElementById('terminalName').value.trim(),
+            simTitle: document.getElementById('simTitle').value.trim()
+        },
+        toneSettings: {
+            formality: document.querySelector('input[name="formality"]:checked')?.value || 'informal',
+            protocol: document.querySelector('input[name="protocol"]:checked')?.value || 'standard',
+            radioOpening: document.getElementById('radioOpening').value.trim(),
+            terminology: {
+                controlRoom: document.getElementById('termCR').value.trim(),
+                fieldOperator: document.getElementById('termField').value.trim(),
+                dcsSystem: document.getElementById('termDCS').value.trim(),
+                radio: document.getElementById('termRadio').value.trim()
+            },
+            sopReferences: {
+                emergency: document.getElementById('sopEmergency').value.trim(),
+                leakage: document.getElementById('sopLeakage').value.trim(),
+                fire: document.getElementById('sopFire').value.trim(),
+                startup: document.getElementById('sopStartup').value.trim(),
+                hse: document.getElementById('sopHSE').value.trim()
+            }
+        },
+        replacements: { operators: {}, products: {}, equipment: {}, custom: [] },
+        scenarioEdits: scenarioEdits,
+        newScenarios: newScenarios.filter(s => s.title.trim())
+    };
     
-    accessCodes = [...accessCodes, ...newCodes];
-    saveAccessCodes();
-    
-    // Clear inputs
-    document.getElementById('codeNote').value = '';
-    
-    showToast(`✅ ${count} toegangscode${count > 1 ? 's' : ''} aangemaakt`);
-}
-
-function generateUniqueCode() {
-    // Format: OIP-XXXX-XXXX (makkelijk te lezen en typen)
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Geen I,O,0,1 om verwarring te voorkomen
-    let code = 'OIP-';
-    for (let i = 0; i < 4; i++) {
-        code += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    code += '-';
-    for (let i = 0; i < 4; i++) {
-        code += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    
-    // Check of code al bestaat
-    if (accessCodes.some(c => c.code === code)) {
-        return generateUniqueCode();
-    }
-    return code;
-}
-
-function updateCodesDisplay() {
-    const tbody = document.getElementById('codesTableBody');
-    const noCodesMsg = document.getElementById('noCodesMessage');
-    const table = document.getElementById('codesTable');
-    
-    // Check expired codes
-    const now = new Date();
-    accessCodes.forEach(c => {
-        if (c.status === 'available' && c.expiresAt && new Date(c.expiresAt) < now) {
-            c.status = 'expired';
-        }
+    // Verzamel replacements
+    document.querySelectorAll('[data-rn]').forEach(i => { if(i.value.trim()) config.replacements.operators[i.getAttribute('data-rn')] = i.value.trim(); });
+    document.querySelectorAll('[data-rp]').forEach(i => { if(i.value.trim()) config.replacements.products[i.getAttribute('data-rp')] = i.value.trim(); });
+    document.querySelectorAll('[data-re]').forEach(i => { if(i.value.trim()) config.replacements.equipment[i.getAttribute('data-re')] = i.value.trim(); });
+    document.querySelectorAll('[data-cs]').forEach(i => {
+        const r = i.closest('tr').querySelector('[data-cr]');
+        if(i.value.trim() && r?.value.trim()) config.replacements.custom.push({ search: i.value.trim(), replace: r.value.trim() });
     });
     
-    if (accessCodes.length === 0) {
-        table.classList.add('hidden');
-        noCodesMsg.classList.remove('hidden');
+    return config;
+}
+
+function generatePersonalConfig() {
+    console.log('generatePersonalConfig called');
+    const participantName = document.getElementById('participantNameForCode').value.trim();
+    console.log('participantName:', participantName);
+    if (!participantName) {
+        showToast('⚠️ Voer een deelnemernaam in');
+        document.getElementById('participantNameForCode').focus();
         return;
     }
     
-    table.classList.remove('hidden');
-    noCodesMsg.classList.add('hidden');
+    const expiry = document.getElementById('singleCodeExpiry').value;
+    const expiresAt = expiry ? new Date(expiry + 'T23:59:59').toISOString() : null;
+    console.log('expiresAt:', expiresAt);
     
-    // Sorteer: beschikbaar eerst, dan gebruikt, dan verlopen
-    const statusOrder = { 'available': 1, 'used': 2, 'expired': 3 };
-    const sorted = [...accessCodes].sort((a, b) => {
-        if (statusOrder[a.status] !== statusOrder[b.status]) {
-            return statusOrder[a.status] - statusOrder[b.status];
-        }
-        return new Date(b.createdAt) - new Date(a.createdAt);
+    try {
+        const config = buildPersonalConfig(participantName, expiresAt);
+        console.log('config built:', config);
+        
+        // Registreer uitgegeven configuratie
+        issuedConfigs.push({
+            participantName: participantName,
+            sessionId: config.participant.sessionId,
+            createdAt: new Date().toISOString(),
+            expiresAt: expiresAt
+        });
+        saveIssuedConfigs();
+        
+        // Download JSON
+        const filename = `simulator_${participantName.replace(/[^a-zA-Z0-9]/g, '_')}_${new Date().toISOString().split('T')[0]}.json`;
+        console.log('downloading:', filename);
+        downloadJSON(config, filename);
+        
+        // Clear input
+        document.getElementById('participantNameForCode').value = '';
+        
+        showToast(`✅ Configuratie voor ${participantName} gedownload`);
+    } catch(e) {
+        console.error('Error in generatePersonalConfig:', e);
+        showToast('❌ Fout: ' + e.message);
+    }
+}
+
+function generateBatchConfigs() {
+    const namesText = document.getElementById('batchParticipantNames').value.trim();
+    if (!namesText) {
+        showToast('⚠️ Voer minimaal één naam in');
+        return;
+    }
+    
+    const names = namesText.split('\n').map(n => n.trim()).filter(n => n.length > 0);
+    if (names.length === 0) {
+        showToast('⚠️ Geen geldige namen gevonden');
+        return;
+    }
+    
+    const expiry = document.getElementById('batchCodeExpiry').value;
+    const expiresAt = expiry ? new Date(expiry + 'T23:59:59').toISOString() : null;
+    
+    // Genereer voor elke deelnemer
+    const configs = [];
+    names.forEach(name => {
+        const config = buildPersonalConfig(name, expiresAt);
+        configs.push({ name, config, sessionId: config.participant.sessionId });
+        
+        // Registreer
+        issuedConfigs.push({
+            participantName: name,
+            sessionId: config.participant.sessionId,
+            createdAt: new Date().toISOString(),
+            expiresAt: expiresAt
+        });
     });
     
+    saveIssuedConfigs();
+    
+    // Download als ZIP (of individuele bestanden)
+    if (configs.length === 1) {
+        const c = configs[0];
+        const filename = `simulator_${c.name.replace(/[^a-zA-Z0-9]/g, '_')}_${new Date().toISOString().split('T')[0]}.json`;
+        downloadJSON(c.config, filename);
+    } else {
+        // Download elk bestand individueel met korte delay
+        configs.forEach((c, i) => {
+            setTimeout(() => {
+                const filename = `simulator_${c.name.replace(/[^a-zA-Z0-9]/g, '_')}_${new Date().toISOString().split('T')[0]}.json`;
+                downloadJSON(c.config, filename);
+            }, i * 300);
+        });
+    }
+    
+    // Clear input
+    document.getElementById('batchParticipantNames').value = '';
+    updateBatchCount();
+    
+    showToast(`✅ ${configs.length} configuratie${configs.length > 1 ? 's' : ''} gegenereerd`);
+}
+
+function downloadJSON(config, filename) {
+    const json = JSON.stringify(config, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+function updateBatchCount() {
+    const namesText = document.getElementById('batchParticipantNames').value.trim();
+    const names = namesText ? namesText.split('\n').map(n => n.trim()).filter(n => n.length > 0) : [];
+    document.getElementById('batchCount').textContent = `${names.length} deelnemer${names.length !== 1 ? 's' : ''}`;
+}
+
+function updateIssuedDisplay() {
+    const tbody = document.getElementById('issuedTableBody');
+    const noMsg = document.getElementById('noIssuedMessage');
+    const table = document.getElementById('issuedTable');
+    
+    if (issuedConfigs.length === 0) {
+        table.style.display = 'none';
+        noMsg.style.display = 'block';
+    } else {
+        table.style.display = 'table';
+        noMsg.style.display = 'none';
+    }
+    
+    // Sorteer nieuwste eerst
+    const sorted = [...issuedConfigs].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    
     tbody.innerHTML = sorted.map(c => {
-        const statusBadge = c.status === 'available' 
-            ? '<span style="padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;background:rgba(34,211,160,0.15);color:var(--accent-green);">Beschikbaar</span>'
-            : c.status === 'used'
-            ? '<span style="padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;background:rgba(78,147,248,0.15);color:var(--accent-blue);">Gebruikt</span>'
-            : '<span style="padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;background:rgba(251,191,36,0.15);color:var(--accent-orange);">Verlopen</span>';
-        
         const created = new Date(c.createdAt).toLocaleDateString('nl-NL');
-        const expires = c.expiresAt ? new Date(c.expiresAt).toLocaleDateString('nl-NL') : '-';
-        const usedBy = c.usedBy ? `${c.usedBy}<br><span style="font-size:11px;color:var(--text-muted);">${new Date(c.usedAt).toLocaleString('nl-NL')}</span>` : '-';
+        const expires = c.expiresAt ? new Date(c.expiresAt).toLocaleDateString('nl-NL') : 'Onbeperkt';
+        const isExpired = c.expiresAt && new Date(c.expiresAt) < new Date();
         
-        return `<tr style="${c.status === 'expired' ? 'opacity:0.5;' : ''}">
-            <td><code style="font-family:'IBM Plex Mono',monospace;font-size:13px;background:var(--bg-input);padding:6px 10px;border-radius:4px;letter-spacing:1px;">${c.code}</code></td>
-            <td>${statusBadge}</td>
+        return `<tr style="${isExpired ? 'opacity:0.5;' : ''}">
+            <td style="font-weight:500;">${escapeHtml(c.participantName)}</td>
+            <td><code style="font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--bg-input);padding:4px 8px;border-radius:4px;">${c.sessionId || '-'}</code></td>
             <td>${created}</td>
-            <td>${expires}</td>
-            <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${escapeHtml(c.note || '')}">${c.note || '-'}</td>
-            <td>${usedBy}</td>
+            <td>${expires}${isExpired ? ' <span style="color:var(--accent-orange);">(verlopen)</span>' : ''}</td>
             <td>
-                ${c.status === 'available' ? `<button class="btn btn-secondary btn-sm" onclick="copyCode('${c.code}')" title="Kopieer">📋</button>` : ''}
-                <button class="btn btn-secondary btn-sm" onclick="deleteCode('${c.code}')" title="Verwijder" style="color:var(--accent-red);">✕</button>
+                <button class="btn btn-secondary btn-sm" onclick="regenerateConfig('${c.sessionId}')" title="Nieuwe configuratie">🔄</button>
+                <button class="btn btn-secondary btn-sm" onclick="deleteIssuedConfig('${c.sessionId}')" title="Verwijder" style="color:var(--accent-red);">✕</button>
             </td>
         </tr>`;
     }).join('');
     
     // Update badge
-    document.querySelectorAll('.codes-count').forEach(el => {
-        el.textContent = accessCodes.filter(c => c.status === 'available').length;
-    });
     document.querySelectorAll('.codes-active').forEach(el => {
-        el.textContent = accessCodes.filter(c => c.status === 'available').length;
+        el.textContent = issuedConfigs.length;
     });
 }
 
-function updateCodesStats() {
-    const now = new Date();
-    const total = accessCodes.length;
-    const available = accessCodes.filter(c => c.status === 'available' && (!c.expiresAt || new Date(c.expiresAt) >= now)).length;
-    const used = accessCodes.filter(c => c.status === 'used').length;
-    const expired = accessCodes.filter(c => c.status === 'expired' || (c.status === 'available' && c.expiresAt && new Date(c.expiresAt) < now)).length;
+function regenerateConfig(sessionId) {
+    const config = issuedConfigs.find(c => c.sessionId === sessionId);
+    if (!config) return;
     
-    document.getElementById('statsTotalCodes').textContent = total;
-    document.getElementById('statsAvailable').textContent = available;
-    document.getElementById('statsUsed').textContent = used;
-    document.getElementById('statsExpired').textContent = expired;
-}
-
-function copyCode(code) {
-    navigator.clipboard.writeText(code).then(() => {
-        showToast('📋 Code gekopieerd');
+    // Genereer nieuwe configuratie voor dezelfde deelnemer
+    const newConfig = buildPersonalConfig(config.participantName, config.expiresAt);
+    
+    // Update registratie
+    issuedConfigs.push({
+        participantName: config.participantName,
+        sessionId: newConfig.participant.sessionId,
+        createdAt: new Date().toISOString(),
+        expiresAt: config.expiresAt
     });
+    saveIssuedConfigs();
+    
+    // Download
+    const filename = `simulator_${config.participantName.replace(/[^a-zA-Z0-9]/g, '_')}_${new Date().toISOString().split('T')[0]}.json`;
+    downloadJSON(newConfig, filename);
+    
+    showToast(`✅ Nieuwe configuratie voor ${config.participantName}`);
 }
 
-function copyAllCodes() {
-    const availableCodes = accessCodes.filter(c => c.status === 'available');
-    if (availableCodes.length === 0) {
-        showToast('⚠️ Geen beschikbare codes');
+function deleteIssuedConfig(sessionId) {
+    if (!confirm('Deze registratie verwijderen uit het overzicht?')) return;
+    issuedConfigs = issuedConfigs.filter(c => c.sessionId !== sessionId);
+    saveIssuedConfigs();
+    showToast('🗑️ Registratie verwijderd');
+}
+
+function clearIssuedConfigs() {
+    if (issuedConfigs.length === 0) {
+        showToast('✅ Lijst is al leeg');
         return;
     }
-    const text = availableCodes.map(c => c.code + (c.note ? ` (${c.note})` : '')).join('\n');
-    navigator.clipboard.writeText(text).then(() => {
-        showToast(`📋 ${availableCodes.length} codes gekopieerd`);
-    });
+    if (!confirm(`Alle ${issuedConfigs.length} registraties verwijderen?`)) return;
+    issuedConfigs = [];
+    saveIssuedConfigs();
+    showToast('🗑️ Lijst gewist');
 }
 
-function downloadCodesList() {
-    const availableCodes = accessCodes.filter(c => c.status === 'available');
-    if (availableCodes.length === 0) {
-        showToast('⚠️ Geen beschikbare codes');
+function downloadIssuedList() {
+    if (issuedConfigs.length === 0) {
+        showToast('⚠️ Geen configuraties uitgegeven');
         return;
     }
     
-    let csv = 'Code,Geldig tot,Notitie\n';
-    availableCodes.forEach(c => {
+    let csv = 'Deelnemer,Sessie ID,Aangemaakt,Geldig tot\n';
+    issuedConfigs.forEach(c => {
+        const created = new Date(c.createdAt).toLocaleDateString('nl-NL');
         const expires = c.expiresAt ? new Date(c.expiresAt).toLocaleDateString('nl-NL') : 'Onbeperkt';
-        csv += `${c.code},${expires},"${(c.note || '').replace(/"/g, '""')}"\n`;
+        csv += `"${c.participantName}",${c.sessionId || '-'},${created},${expires}\n`;
     });
     
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'toegangscodes_' + new Date().toISOString().split('T')[0] + '.csv';
+    a.download = 'uitgegeven_configuraties_' + new Date().toISOString().split('T')[0] + '.csv';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    showToast('⬇️ Codes lijst gedownload');
-}
-
-function deleteCode(code) {
-    if (!confirm('Weet je zeker dat je deze code wilt verwijderen?')) return;
-    accessCodes = accessCodes.filter(c => c.code !== code);
-    saveAccessCodes();
-    showToast('🗑️ Code verwijderd');
-}
-
-function clearExpiredCodes() {
-    const expiredCount = accessCodes.filter(c => c.status === 'expired').length;
-    if (expiredCount === 0) {
-        showToast('✅ Geen verlopen codes');
-        return;
-    }
-    if (!confirm(`${expiredCount} verlopen code(s) verwijderen?`)) return;
-    accessCodes = accessCodes.filter(c => c.status !== 'expired');
-    saveAccessCodes();
-    showToast(`🗑️ ${expiredCount} verlopen codes verwijderd`);
-}
-
-function getValidCodesForExport() {
-    // Alleen beschikbare codes exporteren voor embedding in simulator
-    return accessCodes
-        .filter(c => c.status === 'available')
-        .map(c => ({
-            code: c.code,
-            expiresAt: c.expiresAt
-        }));
+    showToast('⬇️ Overzicht gedownload');
 }
 
 // =====================================================
@@ -1690,8 +1748,10 @@ function downloadTrainingPlan() {
 initTables();
 renderScenarios();
 renderNewScenarios();
-updateCodesDisplay();
-updateCodesStats();
+updateIssuedDisplay();
+
+// Event listener voor batch count
+document.getElementById('batchParticipantNames').addEventListener('input', updateBatchCount);
 </script>
 </body>
 </html>
